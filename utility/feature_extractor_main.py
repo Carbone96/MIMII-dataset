@@ -10,28 +10,28 @@ class feature_extractor_type(Enum):
     WELCSH_PSD = 3
     SCALO = 4
     
-def feature_extractor_from_dict(dic, base_folder):
-    if dic['para_dict']['type'] = feature_extractor_type.MEL_SPEC:
-        feat = feature_extractor_spectrogram(base_folder)
-        feat.read_from_dict(dic)
-        
-    elif dic['para_dict']['type'] = feature_extractor_type.PSD:
-        feat = feature_extractor_PSD(base_folder)
-        feat.read_from_dict(dic)
-        
-    elif dic['para_dict']['type'] = feature_extractor_type.WELCSH_PSD:
-        feat = feature_extractor_welcshPSD(base_folder)
-        feat.read_from_dict(dic)
-        
-    elif dic['para_dict']['type'] = feature_extractor_type.SCALO:
-        feat = feature_extractor_scalo(base_folder)
-        feat.read_from_dict(dic)
-         
-    return feat
+    def feature_extractor_from_dict(dic, base_folder):
+        if dic['para_dict']['type'] = feature_extractor_type.MEL_SPEC:
+            feat = feature_extractor_spectrogram(base_folder)
+            feat.read_from_dict(dic)
 
-def feature_extractor_from_file():
-    d = pickle.load(open(filepath, "rb"))
-    return feature_extractor_from_dict(d, base_folder)
+        elif dic['para_dict']['type'] = feature_extractor_type.PSD:
+            feat = feature_extractor_PSD(base_folder)
+            feat.read_from_dict(dic)
+
+        elif dic['para_dict']['type'] = feature_extractor_type.WELCSH_PSD:
+            feat = feature_extractor_welcshPSD(base_folder)
+            feat.read_from_dict(dic)
+
+        elif dic['para_dict']['type'] = feature_extractor_type.SCALO:
+            feat = feature_extractor_scalo(base_folder)
+            feat.read_from_dict(dic)
+
+        return feat
+
+    def feature_extractor_from_file():
+        d = pickle.load(open(filepath, "rb"))
+        return feature_extractor_from_dict(d, base_folder)
 
 # Main class : works as an API
 class feature_extractor():

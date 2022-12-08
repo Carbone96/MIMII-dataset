@@ -1,4 +1,4 @@
-print('loading mel_spectrogram.py')
+ print('loading mel_spectrogram.py')
 
 # Feature extractor for handling mel spectrogram
 
