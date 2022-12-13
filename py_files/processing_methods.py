@@ -11,6 +11,7 @@ import librosa
 
 from abc import ABC, abstractmethod
 
+from ssqueezepy import cwt
 
 
 def MethodSelector(hyper_param : dict):
@@ -55,6 +56,18 @@ class ProcessingMethod():
     def compute(self, raw_data):
         """ Perform the computation related to a specific method"""
         pass
+
+
+class Scalo_class(ProcessingMethod):
+
+    def __init__(self,hyper_param:dict):
+        super().__init__(hyper_param)
+
+    def compute(self, raw_data):
+        """ Process the data """
+        for data_vector in raw_data: 
+            Wx, scales = cwt(data_vector, 'morlet')
+            self.processed_data.append(np.array([np.mean(abs(x)) for x in Wx]))
 
 class PSD_class(ProcessingMethod):
 
@@ -111,7 +124,8 @@ class Spectro_class(ProcessingMethod):
 def foo(raw_data, hyper_param):
     
     method_dict = {'psd' : PSD_class(hyper_param),
-                'spectro' : Spectro_class(hyper_param)}
+                'spectro' : Spectro_class(hyper_param),
+                'scalo' : Scalo_class(hyper_param)}
 
     method = method_dict[hyper_param['method_name']]
     method.foo(raw_data)
@@ -125,25 +139,24 @@ def main():
     import importData
 
     user_path = 'C:/Users/carbo/Documents/'
-    FILEPATH_NORMAL  = "/MIMII/RawData/+6dB/test/id_02/normal"
+    data_folder  = "/MIMII/RawData/+6dB/"
     FILEPATH_ABNORMAL  = "/MIMII/RawData/+6dB/test/id_02/abnormal"
+
+    ID = 'id_02'
     hyper_param = {'channel' : 2,
-                  'method_name' : 'spectro',
+                  'method_name' : 'scalo',
+                  'machine_name' : 'test',
                   'max_freq' : 3000}
 
-    audio_imp = importData.AudioDataImporter(user_path, FILEPATH_ABNORMAL, hyper_param )
+    audio_imp = importData.AudioDataImporter(user_path, data_folder,ID,hyper_param, status = "normal" )
     hyper_param, raw_data = audio_imp.foo()
 
     processed_data, hyper_param  = foo(raw_data, hyper_param)
     
-    raws_per_file = hyper_param['raws_per_file']
-    cols_per_file = hyper_param['columns_per_file']
-    file_count = hyper_param['file_count']
 
-    print(f'The dataset is constitued of {raws_per_file} raws per file ')
-    print(f'The vector data is of size {cols_per_file} columns per file')
+    print(processed_data[0])
+    print(f'{hyper_param} ')
     print(f'The dimensions of the first element of the processed data are : {np.shape(processed_data[0])}')
-    print(f'The number of files in this dataset is {file_count}')
 
 if __name__ == "__main__":
     main()

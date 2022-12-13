@@ -1,6 +1,6 @@
 import os
-
-
+import soundfile as sf
+import numpy as np
 """
 Message from 09/12
 ---------------------------------- WARNING -----------------------------------------------------------
@@ -17,7 +17,7 @@ UPDATE REQUIRED :
 
 class AudioDataImporter():
 
-    def __init__(self, user_path : str, data_path : str, ID :str, hyper_param : dict, status :str):
+    def __init__(self, user_path : str, data_path : str, ID : str, hyper_param : dict, status :str):
         self.files_path = user_path + generate_filepath(data_path,ID,status,hyper_param['machine_name'])
         self.files = None
         self.file_count = None
@@ -68,16 +68,11 @@ class AudioDataImporter():
 
         return self.hyper_param, self.raw_data
 
-def generate_filepath(base_folder, ID ,status , machine_name ) :
+
+def generate_filepath(data_path : str, ID : str,status : str, machine_name : str) -> str:
     """ Generate the filepath to get the audio file """
     
-    return base_folder + machine_name + '/' + ID + '/' + status
-
-
-def generate_filepath(base_folder : str, ID : int,status : str, machine_name : str) -> str:
-    """ Generate the filepath to get the audio file """
-    
-    return base_folder + machine_name + '/' + ID + '/' + status
+    return data_path + machine_name + '/' + ID + '/' + status
 
     
 

@@ -8,6 +8,17 @@ import numpy as np
 from abc import ABC, abstractmethod
 
 
+"""
+    UPDATE TO DO :
+
+    Rework the implementation such that test_set that need no reshape and those who do gets call in a more generic way
+    ---> Makes it easier to see what is the data transformation
+
+
+"""
+
+
+
 def ReconstructLabels(hyper_param:dict):
     return [0]*hyper_param['file_count_abnormal'] + [1]*hyper_param['file_count_abnormal']
 
@@ -52,7 +63,7 @@ def foo(autoencoder : Autoencoder, test_set : pd.DataFrame, hyper_param : dict):
     if hyper_param['method_name'] =='spectro':
         return SpectroEvaluation(autoencoder,test_set,hyper_param)
     if hyper_param['method_name'] == 'scalo':
-        pass
+        return PSDEvaluation(autoencoder,test_set,hyper_param)
 
 def main():
     

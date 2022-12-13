@@ -21,7 +21,6 @@ BATCH = 512
 def foo( user_path : str, data_folder : str, hyper_param :dict):
     
     IDs_chosen = IDS[hyper_param['IDchosen']]
-    print(IDs_chosen)
     hyper_param['channel'] = CHANNELS[hyper_param['machine_name']]
     AUCs = []
 
