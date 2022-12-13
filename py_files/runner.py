@@ -18,7 +18,7 @@ BATCH = 512
 """
 
 
-def foo( user_path : str, base_folder : str, hyper_param :dict):
+def foo( user_path : str, data_folder : str, hyper_param :dict):
     
     IDs_chosen = IDS[hyper_param['IDchosen']]
     print(IDs_chosen)
@@ -27,10 +27,7 @@ def foo( user_path : str, base_folder : str, hyper_param :dict):
 
     for ID in IDs_chosen:
         
-        filepath_normal = generate_filepath(base_folder, ID ,status = 'normal', machine_name =hyper_param['machine_name'])
-        print(filepath_normal)
-        filepath_abnormal = generate_filepath(base_folder, ID ,status = 'abnormal', machine_name =hyper_param['machine_name'])
-
+        
         """ 
         UPDATE TO DO : 
             The way hyper_param is updated by importData is not the best !  
@@ -38,8 +35,8 @@ def foo( user_path : str, base_folder : str, hyper_param :dict):
             ---> Ideally, they're should be a 'settings' dict with overall methods settings and a 'hyper_param' dict
 
         """
-        importer_RawData_normal = importData.AudioDataImporter(user_path,filepath_normal,hyper_param, status = "normal")
-        importer_RawData_abnormal = importData.AudioDataImporter(user_path,filepath_abnormal,hyper_param, status = "abnormal")
+        importer_RawData_normal = importData.AudioDataImporter(user_path,data_folder,ID,hyper_param, status = "normal")
+        importer_RawData_abnormal = importData.AudioDataImporter(user_path,data_folder,ID,hyper_param, status = "abnormal")
 
         hyper_param, raw_data_normal = importer_RawData_normal.foo()
         hyper_param, raw_data_abnormal = importer_RawData_abnormal.foo()
@@ -111,9 +108,5 @@ def foo( user_path : str, base_folder : str, hyper_param :dict):
     return AUCs
     
 
-def generate_filepath(base_folder, ID ,status , machine_name ) :
-    """ Generate the filepath to get the audio file """
-    
-    return base_folder + machine_name + '/' + ID + '/' + status
 
     
