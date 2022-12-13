@@ -6,10 +6,11 @@ writer_path = 'C:/Users/carbo/Documents/MIMII/Data/' + '+6dB' +'/PSD/'
 
 
 def main():
-    hyper_param = {"machine_name" : "test", 
-                "method_name" : "scalo",
+    hyper_param = {"machine_name" : "fan", 
+                "method_name" : "psd",
                 "IDchosen" : 3,
-                "max_freq" : 3000
+                "max_freq" : 3000,
+                'learner' : 'autoencoder'
                 }
 
 

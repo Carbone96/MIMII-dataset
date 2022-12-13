@@ -83,15 +83,8 @@ def foo( user_path : str, data_folder : str, hyper_param :dict):
 
 
         # Train algorithm 
-        shuffled_train_set, shuffled_test_set, shuffled_labels, autoencoder = learner.foo(train_set,test_set)
-        autoencoder.fit(shuffled_train_set, shuffled_train_set, 
-                                  epochs=EPOCHS, 
-                                  batch_size=BATCH,
-                                  validation_data=(shuffled_test_set,shuffled_test_set),
-                                  validation_split = 0.1,
-                                  verbose = 0,
-                                  shuffle=False # you don't want to shuffle here, so that you keep track of the labels !
-                                 )
+        autoencoder = learner.foo(train_set,test_set,hyper_param)
+       
         # Test algorithm
 
         print(f'Ready to evaluate performances !')

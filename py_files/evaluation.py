@@ -1,11 +1,7 @@
 import pandas as pd
 import tensorflow as tf
-
 from learner import Autoencoder
-
-from tensorflow.keras import losses
 import numpy as np
-from abc import ABC, abstractmethod
 
 
 """
