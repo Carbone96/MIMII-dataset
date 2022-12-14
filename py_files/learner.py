@@ -8,7 +8,7 @@ from tensorflow.keras import layers
 #import os
 #os.environ['TF_CPP_MIN_LOG_LEVEL'] = '2'
 
-import learner_data_prep
+from py_files import learner_data_prep
 
 class Autoencoder(Model):
 

@@ -1,6 +1,7 @@
 import pandas as pd
 import tensorflow as tf
-from learner import Autoencoder
+from py_files import learner
+from py_files.learner import Autoencoder
 import numpy as np
 
 

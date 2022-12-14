@@ -1,10 +1,10 @@
-import processing_methods
-import preparation
-import compute_metrics
-import splitter
-import evaluation
-import learner
-import importData
+from py_files import processing_methods
+from py_files import preparation
+from py_files import compute_metrics
+from py_files import splitter
+from py_files import evaluation
+from py_files import learner
+from py_files import importData
 
 CHANNELS = {"fan" : 5,"pump": 3,"valve" : 1, "slider" : 7, "test" : 5} # il faudrait vérifier que je sélectionne les bons channels, pour le moment ça fera l'affaire
 IDS = [["id_00"],["id_02"], ["id_04"], ["id_06"]]
@@ -40,7 +40,8 @@ def foo( user_path : str, data_folder : str, hyper_param :dict):
         hyper_param, raw_data_normal = importer_RawData_normal.foo()
         hyper_param, raw_data_abnormal = importer_RawData_abnormal.foo()
 
-        print(f'Data import has been successful !')
+        machine_name = hyper_param['machine_name']
+        print(f'Data import of {machine_name} with {ID} has been successful !')
 
 
         """
@@ -50,7 +51,7 @@ def foo( user_path : str, data_folder : str, hyper_param :dict):
         processed_data_normal, hyper_param = processing_methods.foo(raw_data_normal, hyper_param)
         processed_data_abnormal, hyper_param = processing_methods.foo(raw_data_abnormal, hyper_param)
 
-        print(f'Data processing haas been successful !')
+        print(f'Data processing has been successful !')
         # Prepare the data before splitting it into train & test sets 
         df_normal, df_abnormal, hyper_param = preparation.foo(processed_data_normal, processed_data_abnormal, hyper_param)
 
@@ -64,7 +65,7 @@ def foo( user_path : str, data_folder : str, hyper_param :dict):
         # ici on laisse bien le train & test sets avec leurs labels !
         train_set, test_set = splitter.foo(df_normal,df_abnormal,hyper_param)
         print(f'Data preparation is finished.. beginning learning !')
-        print(type(train_set))
+
         """
         UPDATE TO DO:
 
@@ -78,10 +79,7 @@ def foo( user_path : str, data_folder : str, hyper_param :dict):
             POOR FLEXIBILITY :
         ---> I don't like that the 'runner.py' as to run the autoencoder.fit() , other function might not be implementable this way !
         """
-        print(f'Shape of train set : {train_set.shape}')
-        print(f'Shape of train set : {test_set.shape}')
-
-
+        
         # Train algorithm 
         autoencoder = learner.foo(train_set,test_set,hyper_param)
        
@@ -89,14 +87,11 @@ def foo( user_path : str, data_folder : str, hyper_param :dict):
 
         print(f'Ready to evaluate performances !')
 
-        
         lossValues, labels = evaluation.foo(autoencoder, test_set, hyper_param)
-        print(lossValues)
-        #print(labels['labels'])
-
+    
         AUCs.append(compute_metrics.get_AUC_score(labels, lossValues))
         print(f'AUC value stored !')
-        print(AUCs)
+        
     return AUCs
     
 
