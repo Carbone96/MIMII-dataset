@@ -1,9 +1,9 @@
 import pandas as pd
 import tensorflow as tf
-from py_files import learner
-from py_files.learner import Autoencoder
+from learnerv2 import Autoencoder
 import numpy as np
 
+import mahlanobis_dist
 
 """
     UPDATE TO DO :
@@ -32,6 +32,11 @@ def MSEloss(model, data):
     reconstructions = model(data)
     return tf.keras.losses.mse(reconstructions,data)
 
+def MahalaLoss(model, data):
+    data = tf.cast(data,float)
+    reconstructions = model(data)
+    return mahlanobis_dist.LossCalc(reconstructions, data)
+
 def SpectroEvaluation(autoencoder : Autoencoder , test_set : pd.DataFrame,  hyper_param : dict):
 
     test_set, labels = SplitTestAndLabels(test_set)
@@ -42,7 +47,7 @@ def SpectroEvaluation(autoencoder : Autoencoder , test_set : pd.DataFrame,  hype
     lostValues_list = []
     for file_num in range(file_count_test_set):
         test_set_slice = test_set.iloc[file_num*raws_per_file : (file_num+1)*raws_per_file]
-        lossValues = np.mean(MSEloss(autoencoder,test_set_slice))
+        lossValues = np.mean(MahalaLoss(autoencoder,test_set_slice))
         lostValues_list.append(lossValues)
     return lostValues_list, ReconstructLabels(hyper_param)
 
@@ -50,7 +55,7 @@ def PSDEvaluation(autoencoder : Autoencoder , test_set : pd.DataFrame, hyper_par
 
     test_set, labels = SplitTestAndLabels(test_set)
 
-    return MSEloss(autoencoder,test_set), ReconstructLabels(hyper_param)
+    return MahalaLoss(autoencoder,test_set), ReconstructLabels(hyper_param)
 
 
 def foo(autoencoder : Autoencoder, test_set : pd.DataFrame, hyper_param : dict):

@@ -1,21 +1,20 @@
 import runner
 
-data_folder = '/MIMII/RawData/' + '+6dB' + '/' # fan/id_00/abnormal'
-user_path = 'C:/Users/carbo/Documents/'
+data_folder = 'C:/Users/carbo/Documents/MIMII/RawData/+6dB/'
+
 writer_path = 'C:/Users/carbo/Documents/MIMII/Data/' + '+6dB' +'/PSD/'
 
 
 def main():
     hyper_param = {"machine_name" : "fan", 
-                "method_name" : "psd",
-                "IDchosen" : 3,
+                "method_name" : "spectro",
+                "IDchosen" : 2,
                 "max_freq" : 3000,
                 'learner' : 'autoencoder'
                 }
 
 
-    runner.foo(user_path = user_path , 
-            data_folder = data_folder,
+    runner.foo(data_folder = data_folder , 
             hyper_param = hyper_param
             )
 

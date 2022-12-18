@@ -1,4 +1,3 @@
-from py_files import importData
 
 import sys
 import os

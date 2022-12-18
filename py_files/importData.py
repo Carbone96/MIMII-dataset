@@ -70,16 +70,16 @@ class AudioDataImporter:
 
         return self.hyper_param, self.raw_data
 
-def generate_filepath(data_path : str, machine_name : str, id : str, status : str) -> str:
+def generate_filepath(data_folder : str, machine_name : str, id : str, status : str) -> Path:
         """ Generate the filepath in strings to get the audio file """
-        return Path(data_path + machine_name + '/' + id + '/' + status)
+        return Path(data_folder + machine_name + '/' + id + '/' + status)
 
 def main() -> None:
 
     user_path = 'C:/Users/carbo/Documents/'
     data_folder  = "/MIMII/RawData/+6dB/"
 
-    data_path = user_path + data_folder
+    data_folder = user_path + data_folder
 
     id= 'id_02'
 
@@ -87,7 +87,7 @@ def main() -> None:
                     "machine_name" : 'test'}
 
 
-    file_path = generate_filepath(data_path = data_path, machine_name= hyper_param['machine_name'], id = id , status ="normal")
+    file_path = generate_filepath(data_folder = data_folder, machine_name= hyper_param['machine_name'], id = id , status ="normal")
 
     print(file_path)
 

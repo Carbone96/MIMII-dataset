@@ -1,10 +1,10 @@
-from py_files import processing_methods
-from py_files import preparation
-from py_files import compute_metrics
-from py_files import splitter
-from py_files import evaluation
-from py_files import learner
-from py_files import importData
+import processing_methods
+import preparation
+import compute_metrics
+import splitter
+import evaluation
+import learnerv2
+import importData
 
 CHANNELS = {"fan" : 5,"pump": 3,"valve" : 1, "slider" : 7, "test" : 5} # il faudrait vérifier que je sélectionne les bons channels, pour le moment ça fera l'affaire
 IDS = [["id_00"],["id_02"], ["id_04"], ["id_06"]]
@@ -18,7 +18,7 @@ BATCH = 512
 """
 
 
-def foo( user_path : str, data_folder : str, hyper_param :dict):
+def foo( data_folder : str, hyper_param :dict):
     
     IDs_chosen = IDS[hyper_param['IDchosen']]
     hyper_param['channel'] = CHANNELS[hyper_param['machine_name']]
@@ -34,11 +34,14 @@ def foo( user_path : str, data_folder : str, hyper_param :dict):
             ---> Ideally, they're should be a 'settings' dict with overall methods settings and a 'hyper_param' dict
 
         """
-        importer_RawData_normal = importData.AudioDataImporter(user_path,data_folder,ID,hyper_param, status = "normal")
-        importer_RawData_abnormal = importData.AudioDataImporter(user_path,data_folder,ID,hyper_param, status = "abnormal")
+        file_path_normal = importData.generate_filepath(data_folder, hyper_param['machine_name'], ID, "normal")
+        file_path_abnormal = importData.generate_filepath(data_folder, hyper_param['machine_name'], ID, "abnormal")
 
-        hyper_param, raw_data_normal = importer_RawData_normal.foo()
-        hyper_param, raw_data_abnormal = importer_RawData_abnormal.foo()
+        importer_RawData_normal = importData.AudioDataImporter(file_path= file_path_normal,hyper_param = hyper_param, status = "normal")
+        hyper_param, raw_data_normal = importer_RawData_normal._set_raw_data()
+
+        importer_RawData_abnormal = importData.AudioDataImporter(file_path= file_path_abnormal,hyper_param = hyper_param, status = "abnormal")
+        hyper_param, raw_data_abnormal = importer_RawData_abnormal._set_raw_data()
 
         machine_name = hyper_param['machine_name']
         print(f'Data import of {machine_name} with {ID} has been successful !')
@@ -54,14 +57,12 @@ def foo( user_path : str, data_folder : str, hyper_param :dict):
         print(f'Data processing has been successful !')
         # Prepare the data before splitting it into train & test sets 
         df_normal, df_abnormal, hyper_param = preparation.foo(processed_data_normal, processed_data_abnormal, hyper_param)
-
         # Create the test & trains sets (not randomized !)
 
         """
         UPDATE TO DO:
         
         """
-
         # ici on laisse bien le train & test sets avec leurs labels !
         train_set, test_set = splitter.foo(df_normal,df_abnormal,hyper_param)
         print(f'Data preparation is finished.. beginning learning !')
@@ -79,19 +80,21 @@ def foo( user_path : str, data_folder : str, hyper_param :dict):
             POOR FLEXIBILITY :
         ---> I don't like that the 'runner.py' as to run the autoencoder.fit() , other function might not be implementable this way !
         """
-        
+        print(train_set.head())
         # Train algorithm 
-        autoencoder = learner.foo(train_set,test_set,hyper_param)
+        autoencoder = learnerv2.createLearner(train_set,test_set,hyper_param, loss_fun= "mahalanobis")
        
         # Test algorithm
 
         print(f'Ready to evaluate performances !')
 
         lossValues, labels = evaluation.foo(autoencoder, test_set, hyper_param)
-    
+        print(lossValues)
+        print(labels)
         AUCs.append(compute_metrics.get_AUC_score(labels, lossValues))
         print(f'AUC value stored !')
-        
+
+    print(AUCs)
     return AUCs
     
 
