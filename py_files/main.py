@@ -12,12 +12,12 @@ def main():
     AUCs = []
     Normal_MSE = []
     Abnormal_MSE = []
-    num_latent_dim = 1
-    for latent_dim in range(num_latent_dim):
+    num_latent_dim = range(13,20)
+    for latent_dim in num_latent_dim:
 
-        hyper_param = {"machine_name" : "fan", 
-                "method_name" : "psd",
-                "IDchosen" : 2,
+        hyper_param = {"machine_name" : "valve", 
+                "method_name" : "spectro",
+                "IDchosen" : 1,
                 "max_freq" : 3000,
                 'learner' : 'autoencoder',
                 'latent_dim' : latent_dim
@@ -32,7 +32,7 @@ def main():
         Abnormal_MSE.append(avg_normal_MSE)
 
     df = pd.DataFrame([AUCs, Normal_MSE, Abnormal_MSE], index =['AUCs', 'Normal_MSE', 'Abnormal_MSE'],
-    columns =['LatentDim' + str(i) for i in range (num_latent_dim)])
+    columns =['LatentDim' + str(i) for i in num_latent_dim])
 
     df.to_csv('latent_space_param_search.csv')
 

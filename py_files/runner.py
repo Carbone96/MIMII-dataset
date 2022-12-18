@@ -91,10 +91,20 @@ def foo( data_folder : str, hyper_param :dict):
         AUCs.append(compute_metrics.get_AUC_score(labels, lossValues))
         print(f'AUC value stored !')
 
+        
+        
+        # Rajouter une condition pour check si c'est un tensor ou pas ! 
+        lossVal = np.array(lossValues)
 
-        avg_normal_MSE = np.mean(lossValues[labels])
-        avg_abnormal_MSE = np.mean(lossValues[~labels])
+        labels = [bool(label) for label in labels]
+        normal_test_MSE = lossVal[labels]
+        opposite_labels = [not(label) for label in labels]
+        abormal_test_MSE = lossVal[opposite_labels]
 
+        AUCs = np.mean(AUCs)
+        avg_normal_MSE = np.mean(normal_test_MSE)
+        avg_abnormal_MSE = np.mean(abormal_test_MSE)
+   
     return AUCs, avg_abnormal_MSE, avg_normal_MSE
     
 

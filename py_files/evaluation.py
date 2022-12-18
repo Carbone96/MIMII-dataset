@@ -47,7 +47,7 @@ def SpectroEvaluation(autoencoder : Autoencoder , test_set : pd.DataFrame,  hype
     lostValues_list = []
     for file_num in range(file_count_test_set):
         test_set_slice = test_set.iloc[file_num*raws_per_file : (file_num+1)*raws_per_file]
-        lossValues = np.mean(MahalaLoss(autoencoder,test_set_slice))
+        lossValues = np.mean(MSEloss(autoencoder,test_set_slice))
         lostValues_list.append(lossValues)
     return lostValues_list, ReconstructLabels(hyper_param)
 
@@ -55,7 +55,7 @@ def PSDEvaluation(autoencoder : Autoencoder , test_set : pd.DataFrame, hyper_par
 
     test_set, labels = SplitTestAndLabels(test_set)
 
-    return MahalaLoss(autoencoder,test_set), ReconstructLabels(hyper_param)
+    return MSEloss(autoencoder,test_set), ReconstructLabels(hyper_param)
 
 
 def foo(autoencoder : Autoencoder, test_set : pd.DataFrame, hyper_param : dict):
