@@ -1,6 +1,6 @@
 import pandas as pd
 import tensorflow as tf
-from learnerv2 import Autoencoder
+from learner import Autoencoder
 import numpy as np
 
 import mahlanobis_dist
