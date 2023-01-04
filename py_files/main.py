@@ -12,10 +12,10 @@ def main():
     AUCs = []
     Normal_MSE = []
     Abnormal_MSE = []
-    num_latent_dim = range(13,20)
+    num_latent_dim = range(18,19)
     for latent_dim in num_latent_dim:
 
-        hyper_param = {"machine_name" : "valve", 
+        hyper_param = {"machine_name" : "test", 
                 "method_name" : "spectro",
                 "IDchosen" : 1,
                 "max_freq" : 3000,
@@ -34,7 +34,7 @@ def main():
     df = pd.DataFrame([AUCs, Normal_MSE, Abnormal_MSE], index =['AUCs', 'Normal_MSE', 'Abnormal_MSE'],
     columns =['LatentDim' + str(i) for i in num_latent_dim])
 
-    df.to_csv('latent_space_param_search.csv')
+    df.to_csv('latent_space_param_searchSPECTRO.csv')
 
 if __name__ == '__main__':
     main()

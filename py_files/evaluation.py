@@ -3,7 +3,7 @@ import tensorflow as tf
 from learner import Autoencoder
 import numpy as np
 
-import mahlanobis_dist
+from mahlanobis_dist import Mahalanobis
 
 """
     UPDATE TO DO :
@@ -32,13 +32,23 @@ def MSEloss(model, data):
     reconstructions = model(data)
     return tf.keras.losses.mse(reconstructions,data)
 
-def MahalaLoss(model, data):
+def MahalaLoss(data : pd.DataFrame,model, lossFun:Mahalanobis):
+    """ Apply the mahalanobis distance without reconstructing the data """
+    
+    
     data = tf.cast(data,float)
     reconstructions = model(data)
-    return mahlanobis_dist.LossCalc(reconstructions, data)
+    error = data - reconstructions
+    
+    return lossFun.np_transform(error)
 
-def SpectroEvaluation(autoencoder : Autoencoder , test_set : pd.DataFrame,  hyper_param : dict):
+def MahalaDirect(data, lossFun : Mahalanobis):
+    return lossFun.transform(data)
 
+def SpectroEvaluation(autoencoder : Autoencoder , lossFun: Mahalanobis, test_set : pd.DataFrame,  hyper_param : dict):
+    """
+    Evaluate the error corresponding to one file
+    """
     test_set, labels = SplitTestAndLabels(test_set)
     
     raws_per_file = hyper_param['raws_per_file']
@@ -47,23 +57,34 @@ def SpectroEvaluation(autoencoder : Autoencoder , test_set : pd.DataFrame,  hype
     lostValues_list = []
     for file_num in range(file_count_test_set):
         test_set_slice = test_set.iloc[file_num*raws_per_file : (file_num+1)*raws_per_file]
-        lossValues = np.mean(MSEloss(autoencoder,test_set_slice))
+        test_set_slice = tf.cast(test_set_slice,float)
+        reconstructions = autoencoder(test_set_slice)
+        errors = test_set_slice - reconstructions
+        lossValues = np.sum(lossFun.np_transform(errors))
         lostValues_list.append(lossValues)
     return lostValues_list, ReconstructLabels(hyper_param)
 
-def PSDEvaluation(autoencoder : Autoencoder , test_set : pd.DataFrame, hyper_param : dict):
+def PSDEvaluation(autoencoder : Autoencoder , lossFun : Mahalanobis, test_set : pd.DataFrame, hyper_param : dict):
 
     test_set, labels = SplitTestAndLabels(test_set)
 
-    return MSEloss(autoencoder,test_set), ReconstructLabels(hyper_param)
+    return MahalaLoss(test_set,autoencoder,lossFun), ReconstructLabels(hyper_param)
 
 
-def foo(autoencoder : Autoencoder, test_set : pd.DataFrame, hyper_param : dict):
+def foo(autoencoder : Autoencoder,  train_set : pd.DataFrame, test_set : pd.DataFrame, hyper_param : dict):
     """ Select the appropriate method for evaluating the dataframe depending on the method chosen """
     if hyper_param['method_name'] == 'psd':
-        return PSDEvaluation(autoencoder,test_set,hyper_param)
+        lossFun = Mahalanobis()
+        tf_train_set = tf.cast(train_set,float)
+        error = tf_train_set - autoencoder(tf_train_set)
+        lossFun.np_fit(error)
+        return PSDEvaluation(autoencoder,lossFun,test_set,hyper_param)
     if hyper_param['method_name'] =='spectro':
-        return SpectroEvaluation(autoencoder,test_set,hyper_param)
+        lossFun = Mahalanobis()
+        tf_train_set = tf.cast(train_set,float)
+        error = tf_train_set - autoencoder(tf_train_set)
+        lossFun.np_fit(error)
+        return SpectroEvaluation(autoencoder,lossFun,test_set,hyper_param)
     if hyper_param['method_name'] == 'scalo':
         return PSDEvaluation(autoencoder,test_set,hyper_param)
 

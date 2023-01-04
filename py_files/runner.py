@@ -37,6 +37,7 @@ def foo( data_folder : str, hyper_param :dict):
 
         """
         file_path_normal = importData.generate_filepath(data_folder, hyper_param['machine_name'], ID, "normal")
+        print(file_path_normal)
         file_path_abnormal = importData.generate_filepath(data_folder, hyper_param['machine_name'], ID, "abnormal")
 
         importer_RawData_normal = importData.AudioDataImporter(file_path= file_path_normal,hyper_param = hyper_param, status = "normal")
@@ -87,12 +88,12 @@ def foo( data_folder : str, hyper_param :dict):
        
         # Test algorithm
         print(f'Ready to evaluate performances !')
-        lossValues, labels = evaluation.foo(autoencoder, test_set, hyper_param)
-        AUCs.append(compute_metrics.get_AUC_score(labels, lossValues))
+        lossValues, labels = evaluation.foo(autoencoder,train_set, test_set, hyper_param)
+        AUCs.append(compute_metrics.calculate_AUC(labels, lossValues))
         print(f'AUC value stored !')
-
+        print(AUCs)
         
-        
+        """
         # Rajouter une condition pour check si c'est un tensor ou pas ! 
         lossVal = np.array(lossValues)
 
@@ -104,8 +105,8 @@ def foo( data_folder : str, hyper_param :dict):
         AUCs = np.mean(AUCs)
         avg_normal_MSE = np.mean(normal_test_MSE)
         avg_abnormal_MSE = np.mean(abormal_test_MSE)
-   
-    return AUCs, avg_abnormal_MSE, avg_normal_MSE
+        """
+    return AUCs #, avg_abnormal_MSE, avg_normal_MSE
     
 
 
