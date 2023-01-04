@@ -3,8 +3,10 @@ import preparation
 import compute_metrics
 import splitter
 import evaluation
-import learnerv2
+import learner
 import importData
+
+import numpy as np
 
 CHANNELS = {"fan" : 5,"pump": 3,"valve" : 1, "slider" : 7, "test" : 5} # il faudrait vérifier que je sélectionne les bons channels, pour le moment ça fera l'affaire
 IDS = [["id_00"],["id_02"], ["id_04"], ["id_06"]]
@@ -35,6 +37,7 @@ def foo( data_folder : str, hyper_param :dict):
 
         """
         file_path_normal = importData.generate_filepath(data_folder, hyper_param['machine_name'], ID, "normal")
+        print(file_path_normal)
         file_path_abnormal = importData.generate_filepath(data_folder, hyper_param['machine_name'], ID, "abnormal")
 
         importer_RawData_normal = importData.AudioDataImporter(file_path= file_path_normal,hyper_param = hyper_param, status = "normal")
@@ -80,22 +83,30 @@ def foo( data_folder : str, hyper_param :dict):
             POOR FLEXIBILITY :
         ---> I don't like that the 'runner.py' as to run the autoencoder.fit() , other function might not be implementable this way !
         """
-        print(train_set.head())
         # Train algorithm 
-        autoencoder = learnerv2.createLearner(train_set,test_set,hyper_param, loss_fun= "mahalanobis")
+        autoencoder = learner.createLearner(train_set,test_set,hyper_param, latent_dim = hyper_param['latent_dim'], loss_fun= "mse")
        
         # Test algorithm
-
         print(f'Ready to evaluate performances !')
-
-        lossValues, labels = evaluation.foo(autoencoder, test_set, hyper_param)
-        print(lossValues)
-        print(labels)
-        AUCs.append(compute_metrics.get_AUC_score(labels, lossValues))
+        lossValues, labels = evaluation.foo(autoencoder,train_set, test_set, hyper_param)
+        AUCs.append(compute_metrics.calculate_AUC(labels, lossValues))
         print(f'AUC value stored !')
+        print(AUCs)
+        
+        """
+        # Rajouter une condition pour check si c'est un tensor ou pas ! 
+        lossVal = np.array(lossValues)
 
-    print(AUCs)
-    return AUCs
+        labels = [bool(label) for label in labels]
+        normal_test_MSE = lossVal[labels]
+        opposite_labels = [not(label) for label in labels]
+        abormal_test_MSE = lossVal[opposite_labels]
+
+        AUCs = np.mean(AUCs)
+        avg_normal_MSE = np.mean(normal_test_MSE)
+        avg_abnormal_MSE = np.mean(abormal_test_MSE)
+        """
+    return AUCs #, avg_abnormal_MSE, avg_normal_MSE
     
 
 

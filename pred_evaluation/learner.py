@@ -1,11 +1,8 @@
 import tensorflow as tf
-import tensorflow_probability as tfp
-from tensorflow.keras import backend as K
 from tensorflow.keras.models import Model
 from tensorflow.keras import layers
 
-from mahlanobis_dist import Mahalanobis
-import learner_data_prep
+import pandas as pd
 
 class Autoencoder(Model):
 
@@ -28,38 +25,41 @@ class Autoencoder(Model):
       layers.Dense(64, activation="relu"),
       layers.Dense(self.InputSize, activation="linear")])
 
-  def call(self, x):
-    encoded = self.encoder(x)
+  def call(self, input_data):
+    """ Returns the reconstructed data """
+    encoded = self.encoder(input_data)
     decoded = self.decoder(encoded)
     return decoded
 
+  def reconstructions_error(self, x):
+    """ Returns the reconstruction error """
+    x = tf.cast(x, float)
+    reconstructions = self.call(x)
+    return reconstructions - x
 
-def createLearner(train_set,test_set,hyper_param, EPOCHS = 50, BATCH  = 512, latent_dim = 8, loss_fun = "mse"):
+def createLearner(train_set: pd.DataFrame,test_set: pd.DataFrame, labels : pd.DataFrame, learner_dict : dict):
 
-  if loss_fun == "None":
-    return None
+  loss_fun = learner_dict['loss_fun']
+  latent_dim = learner_dict['latent_dim']
+  learner_name = learner_dict['name']
+  epochs = learner_dict['epochs']
+  batch_size = learner_dict['batch_size']
 
-  if hyper_param['learner'] == 'autoencoder':
-    train_set, test_set,labels = learner_data_prep.foo(train_set, test_set)
-    learnerModel = Autoencoder(InputSize= train_set.shape[1], latent_dim = latent_dim)
-    if loss_fun == "mse":
-      learnerModel.compile(loss = "mse",
-                            optimizer= 'adam')               
-    if loss_fun == "mahalanobis":
-      lossFun = Mahalanobis()
-      learnerModel.compile(loss = lossFun.lossFun,
-                            optimizer= 'adam')
-    print(f'Learner will fit the data now !')
-    learnerModel.fit(train_set, train_set, 
-                                  epochs=EPOCHS, 
-                                  batch_size=BATCH,
+  if learner_name == 'autoencoder':
+    autoencoder = Autoencoder(InputSize= train_set.shape[1], latent_dim = latent_dim)
+    autoencoder.compile(loss = loss_fun,optimizer= 'adam')
+
+    print(f'Autoencoder will fit the data now !')
+    autoencoder.fit(train_set, train_set, 
+                                  epochs=epochs, 
+                                  batch_size=batch_size,
                                   validation_data=(test_set,test_set),
                                   validation_split = 0.1,
                                   verbose = 0,
-                                  shuffle=False # you don't want to shuffle here, so that you keep track of the labels !
+                                  shuffle=True
                                  )
-    print(f'Learner has trained. Ready to predict, boss !')
-  return learnerModel
+    print(f'Autoencoder has trained. Ready to predict, boss !')
+    return autoencoder
 
 
 

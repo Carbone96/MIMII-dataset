@@ -74,6 +74,7 @@ class PSD_class(ProcessingMethod):
     def __init__(self, hyper_param :dict):
         super().__init__(hyper_param)
         self.max_freq = hyper_param['max_freq']
+        self.f_vec = None
 
     def low_pass_filter(self, PSD_list : list, f_vec : list) -> list:
         """ Create a low pass filtering of the PSD based on the max freq"""
@@ -85,6 +86,7 @@ class PSD_class(ProcessingMethod):
         for data_vector in raw_data: 
             f_vec, PSDval = signal.welch(data_vector, fs ,nperseg=1024)
             PSD_filtered = self.low_pass_filter(PSDval, f_vec)
+            self.f_vec = self.low_pass_filter(f_vec, f_vec)
             self.processed_data.append(PSD_filtered)
             
 class Spectro_class(ProcessingMethod):
