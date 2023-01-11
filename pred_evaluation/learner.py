@@ -6,23 +6,24 @@ import pandas as pd
 
 class Autoencoder(Model):
 
-  def __init__(self, InputSize : int, latent_dim : int):
+  def __init__(self, InputSize : int, latent_dim : int, intermediate_layer : int):
 
     super(Autoencoder,self).__init__()
 
     self.InputSize = InputSize
     self.latent_dim = latent_dim
+    self.intermediate_layer = intermediate_layer
 
     self.encoder = tf.keras.Sequential([
-      layers.Dense(64, activation="relu"),
-      layers.Dense(64, activation="relu"),
+      layers.Dense(intermediate_layer, activation="relu"),
+      layers.Dense(intermediate_layer, activation="relu"),
       layers.Dense(self.latent_dim, activation="relu"),
     ])
     
 
     self.decoder = tf.keras.Sequential([
-      layers.Dense(64, activation="relu"),
-      layers.Dense(64, activation="relu"),
+      layers.Dense(intermediate_layer, activation="relu"),
+      layers.Dense(intermediate_layer, activation="relu"),
       layers.Dense(self.InputSize, activation="linear")])
 
   def call(self, input_data):
@@ -46,8 +47,12 @@ def createLearner(train_set: pd.DataFrame,test_set: pd.DataFrame, labels : pd.Da
   batch_size = learner_dict['batch_size']
 
   if learner_name == 'autoencoder':
-    autoencoder = Autoencoder(InputSize= train_set.shape[1], latent_dim = latent_dim)
+    autoencoder = Autoencoder(InputSize= train_set.shape[1], latent_dim = latent_dim, intermediate_layer = 64)
     autoencoder.compile(loss = loss_fun,optimizer= 'adam')
+  if learner_name == 'autoencoder_sparse':
+    autoencoder = Autoencoder(InputSize= train_set.shape[1], latent_dim = latent_dim, intermediate_layer = train_set.shape[1])
+    autoencoder.compile(loss = loss_fun,optimizer= 'adam')
+
 
     print(f'Autoencoder will fit the data now !')
     autoencoder.fit(train_set, train_set, 
