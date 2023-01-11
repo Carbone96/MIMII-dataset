@@ -116,8 +116,5 @@ def main():
 
     # Transform the data
    
-    print(learner.transform(data, true))
-    print(len(data))
-
 if __name__ == "__main__":
     main()

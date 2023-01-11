@@ -9,7 +9,6 @@ def run(data_folder : str, run_settings :dict, data_settings :dict):
     print(f'starting the import !')
     train_set, test_set, labels, run_settings['raws_per_file'] = import_processed_data.import_data(data_folder, data_settings)
 
-    print(test_set)
 
     autoencoder = learner.createLearner(train_set,test_set,labels, run_settings)
     

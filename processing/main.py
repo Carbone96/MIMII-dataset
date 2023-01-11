@@ -1,16 +1,16 @@
 import data_processing
 
-data_folder = 'C:/Users/carbo/Documents/MIMII/RawData/+6dB/'
-write_path = 'C:/Users/carbo/Documents/MIMII/ProcessedData/+6dB/'
+data_folder = 'C:/Users/carbo/Documents/MIMII/RawData/-6dB/'
+write_path = 'C:/Users/carbo/Documents/MIMII/ProcessedData/-6dB/'
 
 def main():
 
     hyper_param = {}
 
-    dict_anomaly = {0:'id_00'}
+    dict_anomaly = {0:'id_02',1:'id_04',2:'id_06'}
     dict_machine = {0:'slider', 1:'fan', 2:'pump', 3:'valve'}
     #dict_machine = {0 : 'test'}
-    dict_method = {1:'spectro'}
+    dict_method = {0:'psd',1:'spectro',2:'mfcc'}
 
     for index,method in dict_method.items():
         hyper_param['method_name'] = method                             #select processing method
@@ -20,7 +20,7 @@ def main():
             for index,anomaly_id in dict_anomaly.items():
                 hyper_param['anomaly_chosen'] = anomaly_id              #select id
          
-                data_processing.process(data_folder, write_folder, hyper_param, saving = False) # process & save
+                data_processing.process(data_folder, write_folder, hyper_param, saving = True) # process & save
 
 if __name__ == '__main__':
     main()

@@ -28,7 +28,7 @@ def run_all_machines(data_settings, run_settings, dict_anomaly, dict_machine, di
     return AUC_list
 
 
-def save_AUC_as_csv(AUC_list):
+def save_AUC_as_csv(AUC_list,run_settings):
 
     AUC_list_aggregated_by_machine = []
     for i in range(4):
@@ -36,28 +36,35 @@ def save_AUC_as_csv(AUC_list):
 
     df = pd.DataFrame(AUC_list_aggregated_by_machine, index = ['slider', 'fan', 'pump', 'valve'],columns = ['id_00','id_02','id_04','id_06'])
 
-    df.to_csv('mfcc_sse_AEmimii18MSE.csv')
+
+    df_name = 'spectro_mahala_AEmimii' + str(run_settings['latent_dim']) + 'MSE.csv'
+    df.to_csv(df_name)
 
 def main():
     data_settings = {'machine_name': 'machine',
                 'feat_extract_method': 'method',
                 'id_anomaly' : 'id'}
 
-    run_settings = {
-                'loss_fun' : 'mse',
-                'latent_dim' : 18,
-                'name' : 'autoencoder',
-                'epochs' : 50,
-                'batch_size' : 512,
-                'evaluation_method' : 'sse'}
-
 
     dict_anomaly = {0:'id_00', 1:'id_02', 2:'id_04', 3:'id_06'}
     dict_machine = {0:'slider', 1:'fan', 2:'pump', 3:'valve'}
-    dict_feat_extract_method = {0:'psd'}
+    dict_feat_extract_method = {0:'spectro'}
 
-    AUCs = run_all_machines(data_settings, run_settings, dict_anomaly, dict_machine, dict_feat_extract_method)
-    save_AUC_as_csv(AUCs)
+    latent_dim_list = [6,7,8,9,10,11]
+    for latent_dim in latent_dim_list:
+        latent_dim = latent_dim +6
+
+        run_settings = {
+                    'loss_fun' : 'mse',
+                    'latent_dim' : latent_dim,
+                    'name' : 'autoencoder_sparse',
+                    'epochs' : 50,
+                    'batch_size' : 512,
+                    'evaluation_method' : 'mahalanobis'}
+
+        AUCs = run_all_machines(data_settings, run_settings, dict_anomaly, dict_machine, dict_feat_extract_method)
+        
+        save_AUC_as_csv(AUCs,run_settings)
 
 
 
