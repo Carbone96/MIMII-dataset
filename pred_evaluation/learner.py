@@ -15,15 +15,14 @@ class Autoencoder(Model):
     self.intermediate_layer = intermediate_layer
 
     self.encoder = tf.keras.Sequential([
-      layers.Dense(intermediate_layer, activation="relu"),
-      layers.Dense(intermediate_layer, activation="relu"),
+      layers.Dense(self.intermediate_layer, activation="relu"),
+      layers.Dense(self.intermediate_layer, activation="relu"),
       layers.Dense(self.latent_dim, activation="relu"),
     ])
     
-
     self.decoder = tf.keras.Sequential([
-      layers.Dense(intermediate_layer, activation="relu"),
-      layers.Dense(intermediate_layer, activation="relu"),
+      layers.Dense(self.intermediate_layer, activation="relu"),
+      layers.Dense(self.intermediate_layer, activation="relu"),
       layers.Dense(self.InputSize, activation="linear")])
 
   def call(self, input_data):
@@ -59,7 +58,6 @@ def createLearner(train_set: pd.DataFrame,test_set: pd.DataFrame, labels : pd.Da
                                   epochs=epochs, 
                                   batch_size=batch_size,
                                   validation_data=(test_set,test_set),
-                                  validation_split = 0.1,
                                   verbose = 0,
                                   shuffle=True
                                  )
@@ -75,7 +73,7 @@ def main():
   train_set = pd.DataFrame([[1,2,3], [1,2,3], [1,2,3], [1,2,3] , [1,2,3] , [1,2,3]])
   test_set = pd.DataFrame([ [1,2,3,0] , [1,2,3,0] ], columns=['1','2','3','labels' ])
 
-  train_set, test_set, labels = learner_data_prep.foo(train_set, test_set)
+  #train_set, test_set, labels = learner_data_prep.foo(train_set, test_set)
 
   autoencoder =  Autoencoder(InputSize = train_set.shape[0], latent_dim = 5) 
   autoencoder.compile(loss = "mse",

@@ -37,7 +37,7 @@ def save_AUC_as_csv(AUC_list,run_settings):
     df = pd.DataFrame(AUC_list_aggregated_by_machine, index = ['slider', 'fan', 'pump', 'valve'],columns = ['id_00','id_02','id_04','id_06'])
 
 
-    df_name = 'spectro_mahala_AEmimii' + str(run_settings['latent_dim']) + 'MSE.csv'
+    df_name = 'spectro_mahala_AEsparse' + str(run_settings['latent_dim']) + 'MSE.csv'
     df.to_csv(df_name)
 
 def main():
@@ -50,7 +50,7 @@ def main():
     dict_machine = {0:'slider', 1:'fan', 2:'pump', 3:'valve'}
     dict_feat_extract_method = {0:'spectro'}
 
-    latent_dim_list = [6,7,8,9,10,11]
+    latent_dim_list = [6]
     for latent_dim in latent_dim_list:
         latent_dim = latent_dim +6
 
@@ -59,7 +59,7 @@ def main():
                     'latent_dim' : latent_dim,
                     'name' : 'autoencoder_sparse',
                     'epochs' : 50,
-                    'batch_size' : 512,
+                    'batch_size' : 32,
                     'evaluation_method' : 'mahalanobis'}
 
         AUCs = run_all_machines(data_settings, run_settings, dict_anomaly, dict_machine, dict_feat_extract_method)
